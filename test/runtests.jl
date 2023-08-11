@@ -59,5 +59,7 @@ mktempdir() do dir
         println(io, testdefs_content)
     end
 
-    run(`$(Base.julia_cmd()) --project=$(Base.active_project()) $(dir)/runtests.jl LinearAlgebra`)
+    # Loading MKL during the tests can create an environment variable for OpenMP that is visible after the tests,
+    # so ignore the check for mutated environment when running the base test set.
+    run(addenv(`$(Base.julia_cmd()) --project=$(Base.active_project()) $(dir)/runtests.jl LinearAlgebra`, "JULIA_TEST_CHECK_MUTATED_ENV" => "false"))
 end
